@@ -1,3 +1,61 @@
+import uuid
+
 from django.db import models
+from django.utils.text import slugify
+
+
+class AccessRequirement(models.TextChoices):
+    ANYONE = ("anyone", "Anyone")
+    EMAIL_REQUIRED = ("email_req", "Email Required")
+
+
+class PublishStatus(models.TextChoices):
+    PUBLISHED = ("pub", "Published")
+    COMING_SOON = ("soon", "Coming Soon")
+    DRAFT = ("draft", "Draft")
+
+
+def course_directory_path(instance: "Course", filename):
+    slug = slugify(instance.title) or "course"
+    unique = uuid.uuid4().hex[:8]
+    return f"courses/{slug}_{unique}/{filename}"
+
 
 # Create your models here.
+class Course(models.Model):
+    # adding id is for static typing only and auto complete
+    id: int
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+
+    image = models.ImageField(
+        upload_to=course_directory_path,  # type: ignore
+        blank=True,
+        null=True,
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=PublishStatus.choices,
+        default=PublishStatus.DRAFT,
+        db_index=True,
+    )
+
+    access = models.CharField(
+        max_length=20,
+        choices=AccessRequirement.choices,
+        default=AccessRequirement.EMAIL_REQUIRED,
+        db_index=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_published(self) -> bool:
+        return self.status == PublishStatus.PUBLISHED
+
+    def __str__(self) -> str:
+        return f"{self.title}"
+
+    class Meta:
+        ordering = ["-created_at"]
