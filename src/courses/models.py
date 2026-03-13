@@ -1,5 +1,8 @@
 import uuid
+from typing import Optional, cast
 
+from cloudinary import CloudinaryResource
+from cloudinary.models import CloudinaryField
 from django.db import models
 from django.utils.text import slugify
 
@@ -27,12 +30,16 @@ class Course(models.Model):
     id: int
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
-
-    image = models.ImageField(
-        upload_to=course_directory_path,  # type: ignore
+    image = CloudinaryField(
+        "image",
         blank=True,
         null=True,
     )
+    # image = models.ImageField(
+    #     upload_to=course_directory_path,  # type: ignore
+    #     blank=True,
+    #     null=True,
+    # )
 
     status = models.CharField(
         max_length=20,
@@ -53,6 +60,20 @@ class Course(models.Model):
     @property
     def is_published(self) -> bool:
         return self.status == PublishStatus.PUBLISHED
+
+    @property
+    def image_html(self) -> str:
+        if not self.image:
+            return "<p>There is no image uploaded</p>"
+        return cast(CloudinaryResource, self.image).image(width=500)
+
+    def get_image(self, *, as_html: bool = False, width: int = 200) -> Optional[str]:
+        if not self.image:
+            return None
+        image = cast(CloudinaryResource, self.image)
+        if as_html:
+            return image.image(width=width, crop="scale")
+        return image.build_url(width=width)
 
     def __str__(self) -> str:
         return f"{self.title}"
