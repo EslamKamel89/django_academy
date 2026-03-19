@@ -4,6 +4,7 @@ from typing import Optional, cast
 from cloudinary import CloudinaryResource
 from cloudinary.models import CloudinaryField
 from django.db import models
+from django.db.models.manager import Manager
 from django.utils.text import slugify
 
 
@@ -56,6 +57,7 @@ class Course(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    lessons: Manager["Lesson"]
 
     @property
     def is_published(self) -> bool:
@@ -80,3 +82,34 @@ class Course(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+
+
+class Lesson(models.Model):
+    # adding id is for static typing only and auto complete
+    id: int
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    course_id: int
+    course: "models.ForeignKey[Course]" = models.ForeignKey(
+        "Course",
+        on_delete=models.CASCADE,
+        related_name="lessons",
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=PublishStatus.choices,
+        default=PublishStatus.PUBLISHED,
+        db_index=True,
+    )
+    can_preview = models.BooleanField(
+        default=False,
+        help_text="If user don't have access to the course they could see this lesson",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return self.title
+
+    class Meta:
+        ordering = ["created_at"]
