@@ -25,6 +25,13 @@ def course_directory_path(instance: "Course", filename):
     return f"courses/{slug}_{unique}/{filename}"
 
 
+def get_public_id_prefix(instance: "Course", *args, **kwargs):
+    # print(args, kwargs)
+    unique = uuid.uuid4().hex[:8]
+    slug = slugify(instance.title)
+    return f"courses/{slug}-{unique}"
+
+
 # Create your models here.
 class Course(models.Model):
     # adding id is for static typing only and auto complete
@@ -35,6 +42,9 @@ class Course(models.Model):
         "image",
         blank=True,
         null=True,
+        public_id_prefix=get_public_id_prefix,
+        asset_folder="courses",
+        tags=["course", "thumbnail"],
     )
     # image = models.ImageField(
     #     upload_to=course_directory_path,  # type: ignore
