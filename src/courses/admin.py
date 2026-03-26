@@ -2,13 +2,20 @@ from typing import cast
 
 from django.contrib import admin
 from django.utils.html import format_html
-from unfold.admin import ModelAdmin
+from unfold.admin import ModelAdmin, StackedInline, TabularInline
 
-from .models import Course, PublishStatus
+from .models import Course, Lesson, PublishStatus
+
+
+class LessonInLine(StackedInline):
+    model = Lesson
+    extra = 0
+    readonly_fields = ["created_at", "updated_at"]
 
 
 @admin.register(Course)
 class CourseAdmin(ModelAdmin):
+    inlines = [LessonInLine]
     list_display = ("id", "title", "status", "access")
     fields = (
         ("title",),

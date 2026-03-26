@@ -89,6 +89,18 @@ class Lesson(models.Model):
     id: int
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
+    thumbnail = CloudinaryField(
+        "image",
+        blank=True,
+        null=True,
+    )
+    video = CloudinaryField(
+        "video",
+        blank=True,
+        null=True,
+        resource_type="video",
+    )
+    order = models.IntegerField(default=0)
     course_id: int
     course: "models.ForeignKey[Course]" = models.ForeignKey(
         "Course",
@@ -112,4 +124,4 @@ class Lesson(models.Model):
         return self.title
 
     class Meta:
-        ordering = ["created_at"]
+        ordering = ["order", "-created_at"]
