@@ -120,6 +120,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 LOCAL_CDN = BASE_DIR.parent / "local-cdn"
 MEDIA_URL = "/media/"
@@ -130,4 +131,7 @@ MEDIA_ROOT = LOCAL_CDN / "media"
 UNFOLD = {
     "SITE_TITLE": "Course Platform",
     "SITE_HEADER": "Course Platform Admin",
+    "STYLES": [
+        "/static/admin/custom.css",
+    ],
 }

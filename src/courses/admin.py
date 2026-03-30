@@ -10,7 +10,7 @@ from .models import Course, Lesson, PublishStatus
 class LessonInLine(StackedInline):
     model = Lesson
     extra = 0
-    readonly_fields = ["created_at", "updated_at"]
+    readonly_fields = ["created_at", "updated_at", "public_id"]
 
 
 @admin.register(Course)
@@ -19,12 +19,13 @@ class CourseAdmin(ModelAdmin):
     list_display = ("id", "title", "status", "access")
     fields = (
         ("title",),
+        ("public_id",),
         ("description",),
         ("image",),
         ("display_image",),
         ("status", "access"),
     )
-    readonly_fields = ("display_image",)
+    readonly_fields = ("display_image", "public_id")
     list_filter = ("status", "access")
     search_fields = ("title",)
 

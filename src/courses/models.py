@@ -7,6 +7,8 @@ from django.db import models
 from django.db.models.manager import Manager
 from django.utils.text import slugify
 
+from core.model_base import CloudinaryMixin
+
 
 class AccessRequirement(models.TextChoices):
     ANYONE = ("anyone", "Anyone")
@@ -32,11 +34,27 @@ def get_public_id_prefix(instance: "Course", *args, **kwargs):
     return f"courses/{slug}-{unique}"
 
 
+def _generate_public_id(model_cls, base: str) -> str:
+    for _ in range(10):  # safety limit
+        unique = uuid.uuid4().hex[:8]
+        candidate = f"{base}-{unique}"
+        if not model_cls.objects.filter(public_id=candidate).exists():
+            return candidate
+    raise RuntimeError("Failed to generate unique public_id")
+
+
 # Create your models here.
-class Course(models.Model):
+class Course(CloudinaryMixin, models.Model):
     # adding id is for static typing only and auto complete
     id: int
     title = models.CharField(max_length=255)
+    public_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        unique=True,
+        db_index=True,
+    )
     description = models.TextField(blank=True, null=True)
     image = CloudinaryField(
         "image",
@@ -69,23 +87,15 @@ class Course(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     lessons: Manager["Lesson"]
 
+    def save(self, *args, **kwargs):
+        if not self.public_id:
+            base = slugify(self.title) if self.title else "course"
+            self.public_id = _generate_public_id(Course, base)
+        return super().save(*args, **kwargs)
+
     @property
     def is_published(self) -> bool:
         return self.status == PublishStatus.PUBLISHED
-
-    @property
-    def image_html(self) -> str:
-        if not self.image:
-            return "<p>There is no image uploaded</p>"
-        return cast(CloudinaryResource, self.image).image(width=500)
-
-    def get_image(self, *, as_html: bool = False, width: int = 200) -> Optional[str]:
-        if not self.image:
-            return None
-        image = cast(CloudinaryResource, self.image)
-        if as_html:
-            return image.image(width=width, crop="scale")
-        return image.build_url(width=width)
 
     def __str__(self) -> str:
         return f"{self.title}"
@@ -94,10 +104,18 @@ class Course(models.Model):
         ordering = ["-created_at"]
 
 
-class Lesson(models.Model):
+class Lesson(CloudinaryMixin, models.Model):
+    cloudinary_field_name = "thumbnail"
     # adding id is for static typing only and auto complete
     id: int
     title = models.CharField(max_length=255)
+    public_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        unique=True,
+        db_index=True,
+    )
     description = models.TextField(blank=True, null=True)
     thumbnail = CloudinaryField(
         "image",
@@ -129,6 +147,12 @@ class Lesson(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.public_id:
+            base = slugify(self.title) if self.title else "lesson"
+            self.public_id = _generate_public_id(Lesson, base)
+        return super().save(*args, **kwargs)
 
     def __str__(self) -> str:
         return self.title
