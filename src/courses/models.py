@@ -1,5 +1,5 @@
 import uuid
-from typing import Optional, cast
+from typing import Literal, Optional, cast
 
 from cloudinary import CloudinaryResource
 from cloudinary.models import CloudinaryField
@@ -27,11 +27,23 @@ def course_directory_path(instance: "Course", filename):
     return f"courses/{slug}_{unique}/{filename}"
 
 
-def get_public_id_prefix(instance: "Course", *args, **kwargs):
+def get_courses_public_id_prefix(instance: "Course", *args, **kwargs):
     # print(args, kwargs)
     unique = uuid.uuid4().hex[:8]
     slug = slugify(instance.title)
     return f"courses/{slug}-{unique}"
+
+
+def get_lessons_public_id_prefix(asset_type: Literal["image", "video"] = "image"):
+    def _inner(instance: "Lesson", *args, **kwargs):
+        unique = uuid.uuid4().hex[:8]
+        slug = slugify(instance.title) or "lesson"
+        if asset_type == "image":
+            return f"lessons/images/{slug}-{unique}"
+        else:
+            return f"lessons/videos/{slug}-{unique}"
+
+    return _inner
 
 
 def _generate_public_id(model_cls, base: str) -> str:
@@ -60,7 +72,7 @@ class Course(CloudinaryMixin, models.Model):
         "image",
         blank=True,
         null=True,
-        public_id_prefix=get_public_id_prefix,
+        public_id_prefix=get_courses_public_id_prefix,
         asset_folder="courses",
         tags=["course", "thumbnail"],
     )
@@ -105,7 +117,8 @@ class Course(CloudinaryMixin, models.Model):
 
 
 class Lesson(CloudinaryMixin, models.Model):
-    cloudinary_field_name = "thumbnail"
+    cloudinary_image_field_name = "thumbnail"
+    cloudinary_video_field_name = "video"
     # adding id is for static typing only and auto complete
     id: int
     title = models.CharField(max_length=255)
@@ -121,12 +134,18 @@ class Lesson(CloudinaryMixin, models.Model):
         "image",
         blank=True,
         null=True,
+        public_id_prefix=get_lessons_public_id_prefix("image"),
+        asset_folder="lessons/images",
+        tags=["lesson", "thumbnail"],
     )
     video = CloudinaryField(
         "video",
         blank=True,
         null=True,
         resource_type="video",
+        public_id_prefix=get_lessons_public_id_prefix("video"),
+        asset_folder="lessons/videos",
+        tags=["lesson", "video"],
     )
     order = models.IntegerField(default=0)
     course_id: int
