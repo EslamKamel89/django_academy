@@ -1,6 +1,7 @@
 from typing import Any, Optional, cast
 
 from cloudinary import CloudinaryResource
+from django.utils.html import format_html
 
 
 class CloudinaryMixin:
@@ -29,11 +30,35 @@ class CloudinaryMixin:
             return image.image(width=width, crop="scale")
         return image.build_url(width=width)
 
-    def get_video(self, *, as_html: bool = False, width: int = 200) -> Optional[str]:
+    def _video_tag(self, video_url: str, *, controls: bool = True):
+        return format_html(
+            '<video {}> <source src="{}" type="video/mp4"  /> </video>',
+            video_url,
+            "controls" if controls else "",
+        )
+
+    def get_video(
+        self,
+        *,
+        as_html: bool = False,
+        width: int = 200,
+        sign_url: bool = True,
+        fetch_format: str = "auto",
+        quality: str = "auto",
+        expiration: int = 3600,
+        controls: bool = True,
+    ) -> Optional[str]:
         field = self._get_video_field()
         if not field:
             return None
         video = cast(CloudinaryResource, field)
+        url = video.build_url(
+            width=width,
+            sign_url=sign_url,
+            fetch_format=fetch_format,
+            quality=quality,
+            expiration=expiration,
+        )
         if as_html:
-            return video.video(width=width, controls=True)
-        return video.build_url(width=width)
+            return self._video_tag(url, controls=controls)
+        return url

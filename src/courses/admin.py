@@ -15,12 +15,14 @@ class LessonInLine(StackedInline):
         ("display_thumbnail",),
         ("video",),
         ("display_video",),
+        ("video_url",),
         ("order", "status"),
-        ("can_preview"),
+        ("can_preview",),
         ("created_at", "updated_at"),
     )
     readonly_fields = [
         "display_thumbnail",
+        "video_url",
         "display_video",
         "created_at",
         "updated_at",
@@ -33,7 +35,18 @@ class LessonInLine(StackedInline):
 
     @admin.display(description="preview video")
     def display_video(self, obj: Lesson):
-        return format_html(obj.get_video(as_html=True) or "", "")
+        return obj.get_video(as_html=True, sign_url=True) or "No Video"
+
+    @admin.display(description="Video url")
+    def video_url(self, obj: Lesson):
+        url = obj.get_video(sign_url=True)
+        if not url:
+            return "No video"
+        return format_html(
+            '<a href="{}" target="_blank">{}</a>',
+            url,
+            obj.title,
+        )
 
 
 @admin.register(Course)

@@ -143,6 +143,7 @@ class Lesson(CloudinaryMixin, models.Model):
         blank=True,
         null=True,
         resource_type="video",
+        type="authenticated",
         public_id_prefix=get_lessons_public_id_prefix("video"),
         asset_folder="lessons/videos",
         tags=["lesson", "video"],
