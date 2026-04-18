@@ -1,0 +1,19 @@
+<video class="cld-video-player demo-player" data-cloud-name="{{ cloud_name }}" data-video-url="{{ video_url }}"
+    controls></video>
+<script>
+    (() => {
+        const script = document.currentScript;
+        const container = script.previousElementSibling;
+        if (!container || !container.classList.contains('demo-player')) {
+            console.error("Can't find the demo-player element")
+            return
+        }
+        const player = container
+        const cloudName = player.dataset.cloudName
+        const videoUrl = player.dataset.videoUrl
+        console.log({ cloudName, videoUrl })
+        const cldPlayer = cloudinary.videoPlayer(player, { cloudName: cloudName });
+        cldPlayer.source(videoUrl)
+
+    })();
+</script>
