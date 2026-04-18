@@ -33,8 +33,8 @@ class CloudinaryMixin:
     def _video_tag(self, video_url: str, *, controls: bool = True):
         return format_html(
             '<video {}> <source src="{}" type="video/mp4"  /> </video>',
-            video_url,
             "controls" if controls else "",
+            video_url,
         )
 
     def get_video(
