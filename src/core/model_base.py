@@ -1,6 +1,8 @@
 from typing import Any, Optional, cast
 
 from cloudinary import CloudinaryResource
+from django.conf import settings
+from django.template.loader import get_template
 from django.utils.html import format_html
 
 
@@ -59,6 +61,16 @@ class CloudinaryMixin:
             quality=quality,
             expiration=expiration,
         )
+        template = get_template("videos/embed.html")
+        html = template.render(
+            {
+                "controls": "controls" if controls else "",
+                "video_url": url,
+                "cloud_name": settings.CLOUDINARY_CLOUD_NAME,
+            }
+        )
+
         if as_html:
-            return self._video_tag(url, controls=controls)
+            # return self._video_tag(url, controls=controls)
+            return html
         return url

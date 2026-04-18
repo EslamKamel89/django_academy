@@ -73,3 +73,14 @@ class CourseAdmin(ModelAdmin):
     @admin.display(boolean=True)
     def is_published(self, obj):
         return obj.status == PublishStatus.PUBLISHED
+
+    class Media:
+        css = {
+            "all": (
+                "https://cdn.jsdelivr.net/npm/cloudinary-video-player@3.10.0/dist/cld-video-player.min.css",
+            )
+        }
+
+        js = (
+            "https://cdn.jsdelivr.net/npm/cloudinary-video-player@3.10.0/dist/cld-video-player.min.js",
+        )
