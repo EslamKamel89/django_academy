@@ -9,7 +9,7 @@ class LessonInLine(StackedInline):
     model = Lesson
     extra = 0
     fields = (
-        ("title",),
+        ("id", "title"),
         ("description",),
         ("thumbnail",),
         ("display_thumbnail",),
@@ -21,6 +21,7 @@ class LessonInLine(StackedInline):
         ("created_at", "updated_at"),
     )
     readonly_fields = [
+        "id",
         "display_thumbnail",
         "video_url",
         "display_video",
@@ -55,6 +56,7 @@ class CourseAdmin(ModelAdmin):
     list_display = ("id", "title", "status", "access")
     list_display_links = ("id", "title")
     fields = (
+        ("id",),
         ("title",),
         ("public_id",),
         ("description",),
@@ -62,7 +64,7 @@ class CourseAdmin(ModelAdmin):
         ("display_image",),
         ("status", "access"),
     )
-    readonly_fields = ("display_image", "public_id")
+    readonly_fields = ("id", "display_image", "public_id")
     list_filter = ("status", "access")
     search_fields = ("title",)
 
