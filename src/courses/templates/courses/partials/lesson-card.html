@@ -1,0 +1,11 @@
+<li class="p-4 hover:bg-neutral-100 transition-colors duration-200">
+    <div class="flex items-center justify-between">
+        <a href="{% url 'lesson-detail' lesson.id %}" class="text-neutral-800 font-medium">
+            {{ lesson.title }}
+        </a>
+
+        <span class="text-xs px-2 py-1 rounded-md bg-primary text-white">
+            Lesson
+        </span>
+    </div>
+</li>

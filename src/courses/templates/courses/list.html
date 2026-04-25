@@ -1,8 +1,27 @@
-<h1>Courses</h1>
-<ul>
-    {% for course in courses %}
-    <li>{{ course.title }}</li>
-    {% empty %}
-    <p>No course available</p>
-    {% endfor %}
-</ul>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-6">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold text-primary">Courses</h1>
+    </div>
+
+    <!-- Courses List -->
+    <div class="bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden">
+        <ul class="divide-y divide-neutral-200">
+
+            {% for course in courses %}
+            {% include 'courses/partials/course-card.html' %}
+            {% empty %}
+            <li class="p-6 text-center">
+                <p class="text-muted">No course available</p>
+            </li>
+            {% endfor %}
+
+        </ul>
+    </div>
+
+</div>
+{% endblock %}
