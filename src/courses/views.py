@@ -7,6 +7,13 @@ from helpers.pr import pr
 from . import services
 
 
+class HomeView(View):
+    def get(self, request: HttpRequest):
+        courses = services.get_published_courses()
+        context = pr({"courses": courses}, "HomeView.get")
+        return render(request, "courses/home.html", context)
+
+
 class CourseListView(View):
     def get(self, request: HttpRequest):
         courses = services.get_published_courses()

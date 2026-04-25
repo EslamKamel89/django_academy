@@ -1,3 +1,29 @@
-<h1>{{ lesson.title }}</h1>
+{% extends 'base.html' %}
 
-<p>{{ lesson.description }}</p>
+{% block content %}
+<div class="space-y-8">
+
+    <!-- Lesson Header -->
+    <div class="space-y-2">
+        <h1 class="text-3xl font-bold text-primary">
+            {{ lesson.title }}
+        </h1>
+        <p class="text-neutral-600 max-w-3xl">
+            {{ lesson.description }}
+        </p>
+    </div>
+
+    <!-- Lesson Content Card -->
+    <div class="bg-neutral-50 border border-neutral-200 rounded-2xl p-6 shadow-sm">
+
+        <!-- Placeholder for future video/content -->
+        <div class="flex items-center justify-center h-48 rounded-xl border border-dashed border-neutral-300 bg-white">
+            <p class="text-muted text-sm">
+                Lesson content will appear here
+            </p>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

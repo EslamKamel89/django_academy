@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="space-y-16">
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-50">
+        <div class="absolute inset-0 bg-gradient-to-r from-[var(--primary-700)]/10 to-[var(--accent-500)]/10"></div>
+
+        <div class="relative px-6 py-16 sm:px-12 lg:px-16 text-center space-y-6">
+            <h1 class="text-4xl sm:text-5xl font-bold text-primary">
+                Learn Without Limits
+            </h1>
+
+            <p class="text-neutral-600 max-w-2xl mx-auto text-lg">
+                Explore high-quality courses, structured lessons, and a smooth learning experience designed to help you
+                grow faster.
+            </p>
+
+            <div class="flex items-center justify-center gap-4">
+                <a href="{% url 'courses-list' %}"
+                    class="px-6 py-3 rounded-xl bg-primary text-white font-medium hover:opacity-90 transition">
+                    Browse Courses
+                </a>
+
+                <a href="#"
+                    class="px-6 py-3 rounded-xl border border-neutral-300 text-neutral-700 font-medium hover:bg-neutral-100 transition">
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <div class="p-6 bg-white border border-neutral-200 rounded-2xl shadow-sm space-y-3">
+            <div class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-white">
+                <i class="bi bi-collection-play"></i>
+            </div>
+            <h3 class="font-semibold text-neutral-800">Structured Courses</h3>
+            <p class="text-sm text-neutral-600">
+                Follow organized learning paths with clear progression and well-defined lessons.
+            </p>
+        </div>
+
+        <div class="p-6 bg-white border border-neutral-200 rounded-2xl shadow-sm space-y-3">
+            <div class="w-10 h-10 flex items-center justify-center rounded-xl bg-accent text-white">
+                <i class="bi bi-play-circle"></i>
+            </div>
+            <h3 class="font-semibold text-neutral-800">Video Lessons</h3>
+            <p class="text-sm text-neutral-600">
+                Learn through engaging video content powered by a seamless streaming experience.
+            </p>
+        </div>
+
+        <div class="p-6 bg-white border border-neutral-200 rounded-2xl shadow-sm space-y-3">
+            <div class="w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-white">
+                <i class="bi bi-speedometer2"></i>
+            </div>
+            <h3 class="font-semibold text-neutral-800">Fast & Simple</h3>
+            <p class="text-sm text-neutral-600">
+                Built with performance and simplicity in mind for a distraction-free learning flow.
+            </p>
+        </div>
+
+    </section>
+
+    <!-- Courses Preview -->
+    <section id="courses" class="space-y-6">
+
+        <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-semibold text-neutral-800">
+                Featured Courses
+            </h2>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            {% for course in courses %}
+            {% include 'courses/partials/course-home-card.html' %}
+            {% empty %}
+            <div class="col-span-full text-center py-10">
+                <p class="text-muted">No courses available yet.</p>
+            </div>
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+</div>
+{% endblock %}

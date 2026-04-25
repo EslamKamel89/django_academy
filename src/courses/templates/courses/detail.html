@@ -1,10 +1,45 @@
-<h1>{{ course.title }}</h1>
-<p>{{ course.description }}</p>
-<ul>
+{% extends 'base.html' %}
 
-    {% for lesson in course.lessons.all %}
-    <li>{{ lesson.title }}</li>
-    {% empty %}
-    <p>No lesson available</p>
-    {% endfor %}
-</ul>
+{% block content %}
+<div class="space-y-8">
+
+    <!-- Course Header -->
+    <div class="space-y-2">
+        <h1 class="text-3xl font-bold text-primary">
+            {{ course.title }}
+        </h1>
+        <p class="text-neutral-600 max-w-3xl">
+            {{ course.description }}
+        </p>
+    </div>
+
+    <!-- Lessons Section -->
+    <div class="space-y-4">
+
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold text-neutral-800">
+                Lessons
+            </h2>
+            <span class="text-xs px-2 py-1 rounded-md bg-accent text-white">
+                {{ course.lessons.count }} Items
+            </span>
+        </div>
+
+        <div class="bg-neutral-50 border border-neutral-200 rounded-xl overflow-hidden">
+            <ul class="divide-y divide-neutral-200">
+
+                {% for lesson in course.lessons.all %}
+                {% include 'courses/partials/lesson-card.html' %}
+                {% empty %}
+                <li class="p-6 text-center">
+                    <p class="text-muted">No lesson available</p>
+                </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
